@@ -1,0 +1,182 @@
+--------Template driven forms---------------
+are the forms which uses Angular directives in the template.
+Form logic is mainly in the HTML template, not the TypeScript component.
+Simpler for small forms with few fields.
+
+Example - 
+<form #myForm="ngForm" (ngSubmit)="submit(myForm)">
+  <input name="name" ngModel required placeholder="Name">
+  <input name="email" ngModel type="email" required placeholder="Email">
+  <button type="submit" [disabled]="!myForm.valid">Submit</button>
+</form>
+ngModel binds input values to the component automatically (two-way binding).
+Validation is handled with template directives like required, minlength, etc.
+
+Pros:
+Easy to use for small/simple forms.
+Less boilerplate code.
+Two-way data binding built-in (ngModel).
+
+Cons:
+
+Hard to manage for large/dynamic forms.
+
+Validation logic is spread between template and component.
+
+Harder to unit test.
+
+
+--------------------PPt Explaination-----
+Explaination
+
+In template-driven forms, Angular automatically binds the input in the HTML template to a component property using ngModel.
+
+This is two-way data binding, meaning:
+
+If the user types something in the input → component property is updated.
+If the component property changes programmatically → input value is updated.
+
+Example
+
+component.ts
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-template-form',
+  templateUrl: './template-form.component.html'
+})
+export class TemplateFormComponent {
+  user = {
+    name: '',
+    email: ''
+  };
+
+  submit() {
+    console.log(this.user);
+  }
+}
+
+
+template-form.component.html
+
+<form (ngSubmit)="submit()" #myForm="ngForm">
+  <label>Name:</label>
+  <input name="name" [(ngModel)]="user.name" required placeholder="Enter name">
+
+  <label>Email:</label>
+  <input name="email" [(ngModel)]="user.email" type="email" required placeholder="Enter email">
+
+  <button type="submit" [disabled]="!myForm.valid">Submit</button>
+</form>
+
+<p>Model Value: {{ user | json }}</p>
+
+
+How it works
+
+Typing in the name/email field updates user.name and user.email in real-time.
+
+If you programmatically do this.user.name = 'John';, the input box updates automatically.
+
+
+--------------Reactive forms ------------
+
+Entire form is defined in TypeScript component using FormGroup, FormControl, and FormArray.
+Offers more control, flexibility, and scalability.
+Suited for large, complex, or dynamic forms.
+
+-code 
+form = new FormGroup({
+  name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+  email: new FormControl('', [Validators.required, Validators.email]),
+});
+
+
+onSubmit() {
+  console.log(this.form.value);
+}
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="name" placeholder="Name">
+  <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched">Name required</div>
+  
+  <input formControlName="email" placeholder="Email">
+  <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched">Email required</div>
+
+  <button type="submit" [disabled]="!form.valid">Submit</button>
+</form>
+
+Pros:
+
+Complete programmatic control over form structure and validation.
+
+Easier to unit test.
+
+Great for dynamic forms, conditional fields, complex validations.
+
+Cons:
+
+More boilerplate code.
+
+Can feel verbose for small/simple forms.
+
+
+----------------PPt -------------------
+In reactive forms, the form model is explicitly defined in the component using FormGroup and FormControl.
+
+The HTML template binds to the form controls using formControlName.
+
+You can track and react to changes in the form model programmatically
+
+
+Feature	Template-driven	Reactive
+differenec ---
+templates - Data binding	Automatic 2-way (ngModel)	
+reactive Manual via FormGroup/FormControl
+
+----------------------------------Formly--------------------
+Formly is a library which helps to build dynamic forms in Angular using JSON or typecript object configuration instead of manually writing 
+a lot of repetitive form HTML and form controls.
+Built on top of Reactive Forms.
+Instead of manually writing HTML inputs, you define form fields as JSON configuration.
+Formly automatically generates inputs, validations, error messages, and two-way data binding.
+Automatically handle validation, labels, placeholders, and error messages.
+
+Integrate with Reactive Forms, so you can still use FormGroup and FormControl.
+
+----- Library name: @ngx-formly/core
+
+
+----With Formly
+1. we can define a form in a configuration object.
+2. It automatically generates the HTML inputs and form controls.
+3. We can add validations, conditional fields, and dynamic behavior easily.
+
+---------------------installation ---------------------
+ng add @ngx-formly/schematics --ui-theme=bootstrap
+npm install @ngx-formly/core @ngx-formly/bootstrap bootstrap
+
+
+npm install @angular/forms @ngx-formly/core @ngx-formly/bootstrap --save
+npm install @ngx-formly/bootstrap bootstrap
+replace bootstrap with one of the following available themes: material, ionic, primeng, kendo, nativescript.
+
+
+ng generate component registration-form
+
+
+-------------------
+1. Two-way data binding means that changes in the form inputs automatically update the component’s model, and changes in the model automatically
+ update the form inputs.
+2. wo-way data binding means that changes in the form inputs automatically update the component’s model, and changes in the model automatically update the form inputs.
+
+It’s commonly done with [(ngModel)] for template-driven forms, or with Reactive Forms + a model object in Formly.
+
+
+Everything starts with the formly-form. General use of it will look something like this:
+
+<formly-form
+  [form]="form"
+  [fields]="fields"
+  [model]="model">
+</formly-form>
